@@ -19,6 +19,9 @@ RUN php artisan passport:keys --no-interaction
 
 RUN php artisan passport:client --personal --no-interaction
 
+# Add storage link command
+RUN php artisan storage:link
+
 RUN chown -R www-data:www-data /var/www
 RUN chmod -R 775 storage bootstrap/cache
 
