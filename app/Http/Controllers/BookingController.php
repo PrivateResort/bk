@@ -11,11 +11,11 @@ class BookingController extends Controller
 {
     /**
      * Display a listing of the resource.
-     * http://localhost:8000/api/bookings/
+     * http:
      */
      public function index()
     {
-        // Fetch all bookings with their related models
+        
         $bookings = Booking::with(['users', 'rooms', 'roomtypes', 'subjects', 'sections'])->get();
 
         return response()->json([
@@ -27,7 +27,7 @@ class BookingController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * http://localhost:8000/api/bookings/
+     * http:
      */
     public function store(Request $request) {
         $user = Auth::user();
@@ -57,25 +57,25 @@ class BookingController extends Controller
 
         $bookings = [];
         foreach ($request->day_of_week as $day) {
-            // Step 1: Check if there are any existing bookings for the same room and day
+            
             $existingBookings = Booking::where('room_id', $request->room_id)
                 ->where('day_of_week', $day)
                 ->whereBetween('book_from', [$request->book_from, $request->book_until])
                 ->whereBetween('book_until', [$request->book_from, $request->book_until]);
 
-            // Step 2: Check if the start_time and end_time overlap with existing bookings
+            
             $overlap = $existingBookings->where(function ($query) use ($request) {
-                // Check if the new booking's start_time overlaps with any existing booking's time
+                
                 $query->whereBetween('start_time', [$request->start_time, $request->end_time])
                       ->orWhereBetween('end_time', [$request->start_time, $request->end_time])
                       ->orWhere(function ($query) use ($request) {
-                          // Check if the new booking is fully contained within an existing booking's time 
+                          
                           $query->where('start_time', '<=', $request->start_time)
                                 ->where('end_time', '>=', $request->end_time);
                       });
             })->exists();
 
-            // Step 3: If there's an overlap cancel the booking
+            
             if ($overlap) {
                 return response()->json([
                     'ok' => false,
@@ -83,7 +83,7 @@ class BookingController extends Controller
                 ], 400);
             }
 
-            // Step 4: Create the booking if no overlap is found
+            
             $booking = Booking::create([
                 'user_id' => $request->user_id,
                 'room_id' => $request->room_id,
@@ -110,7 +110,7 @@ class BookingController extends Controller
 
     /**
      * Update the specified resource in storage.
-     * http://localhost:8000/api/bookings/{booking}
+     * http:
      */
     public function update(Request $request, Booking $booking) {
         $user = Auth::user();
@@ -121,7 +121,7 @@ class BookingController extends Controller
             ], 403);
         }
 
-        $today = now()->format('Y-m-d');
+
 
         $validator = validator($request->all(), [
             'user_id' => 'required|exists:users,id',
@@ -145,33 +145,6 @@ class BookingController extends Controller
             ], 400);
         }
 
-        // Check if there are any existing bookings for the same room and day
-        $existingBookings = Booking::where('room_id', $request->room_id)
-            ->where('day_of_week', $request->day_of_week)
-            ->whereBetween('book_from', [$request->book_from, $request->book_until])
-            ->whereBetween('book_until', [$request->book_from, $request->book_until])
-            ->whereNotIn('id', [$booking->id]);
-
-        // Check if the start_time and end_time overlap with existing bookings
-        $overlap = $existingBookings->where(function ($query) use ($request) {
-            // Check if the new booking's start_time overlaps with any existing booking's time
-            $query->whereBetween('start_time', [$request->start_time, $request->end_time])
-                  ->orWhereBetween('end_time', [$request->start_time, $request->end_time])
-                  ->orWhere(function ($query) use ($request) {
-                      // Check if the new booking is fully contained within an existing booking's time 
-                      $query->where('start_time', '<=', $request->start_time)
-                            ->where('end_time', '>=', $request->end_time);
-                  });
-        })->exists();
-
-        // If there's an overlap cancel the booking
-        if ($overlap) {
-            return response()->json([
-                'ok' => false,
-                'message' => 'Room has already been booked for the selected time range.',
-            ], 400);
-        }
-
         $booking->update($validator->validated());
 
         return response()->json([
@@ -183,7 +156,7 @@ class BookingController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     * http://localhost:8000/api/bookings/{booking}
+     * http:
      */
     public function destroy(Booking $booking) {
         $booking->delete();
