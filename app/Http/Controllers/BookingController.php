@@ -132,7 +132,7 @@ class BookingController extends Controller
             'end_time' => 'required|date_format:H:i',
             'day_of_week' => 'required|array|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday', 
             'day_of_week.*' => 'in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday', 
-            'book_from' => 'required|date|after_or_equal:' . $today, 
+            'book_from' => 'required|date|after_or_equal', 
             'book_until' => 'required|date|after_or_equal:book_from',
             'status' => 'required|in:confirmed,rejected'
         ]);
