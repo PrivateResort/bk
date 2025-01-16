@@ -92,7 +92,7 @@ class BookingController extends Controller
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
                 'day_of_week' => $day, 
-                'status' => $user->role == 'admin' ? 'approved' : 'pending',
+                'status' => $user->role == 'admin' ? 'confirmed' : 'pending',
                 'book_from' => $request->book_from,
                 'book_until' => $request->book_until
             ]);
